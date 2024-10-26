@@ -9,15 +9,15 @@ interface SoknadData {
   navn: string;
   epost: string;
   beskrivelse: string;
-  soknadstype: string; // Forventet at soknadstype er en streng
-  belop?: number; // Valgfritt for tillatelsessøknader
-  kontonummer?: string; // Valgfritt for tillatelsessøknader
-  tillatelsestype?: string; // Valgfritt for økonomiske søknader
-  firma?: string; // Valgfritt for alle søknadstyper
+  soknadstype: string; 
+  belop?: number; 
+  kontonummer?: string; 
+  tillatelsestype?: string; 
+  firma?: string; 
 }
 
 const SoknadSkjema = () => {
-  const { type } = useParams(); // Henter type fra URL
+  const { type } = useParams(); 
 
   // Hvis type er undefined, setter vi en fallback eller håndterer feilen
   const soknadstype = Array.isArray(type) ? type[0] : type || 'ukjent'; 
@@ -40,7 +40,7 @@ const SoknadSkjema = () => {
       epost,
       beskrivelse,
       soknadstype,
-      firma,  // Bruker soknadstype fra URL
+      firma,  
     };
 
     // Legg til felter som er spesifikke for økonomiske søknader

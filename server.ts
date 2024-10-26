@@ -3,6 +3,7 @@ import next from 'next';
 import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
 import soknadRoutes from './src/routes/soknad';
+import userRouter from './src/routes/userRoutes';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.prepare().then(() => {
 
       // API-ruter
       server.use('/api', soknadRoutes);
+      server.use('/api/users', userRouter);
 
       // Håndter Next.js sider
       server.all('*', (req, res) => {
