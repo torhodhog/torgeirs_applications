@@ -25,7 +25,7 @@ const HomePage = () => {
 />
 
 
-        {/* Legg til flere kort ved behov */}
+       
       </div>
       
     </div></>

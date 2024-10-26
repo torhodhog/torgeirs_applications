@@ -24,21 +24,19 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
     }
 
     const soknad: Soknad = {
-      navn, 
+      navn,
       epost,
       beskrivelse,
       soknadstype,
       status: 'innsendt',
       opprettetDato: new Date(),
-      userId,  
+      userId,
     };
 
-    // Hvis firma er sendt inn, legg det til i søknaden
     if (firma) {
       soknad.firma = firma;
     }
 
-    // Logg hvilken type søknad det er
     if (soknadstype === 'okonomi') {
       soknad.belop = parseInt(belop);
       soknad.kontonummer = kontonummer;
@@ -53,7 +51,6 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    // Forsøk å lagre i databasen
     const result = await db.collection('soknader').insertOne(soknad);
     console.log('Søknad lagret med ID:', result.insertedId);
     res.status(201).json(result);
@@ -63,13 +60,13 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
   }
 };
 
-
 export const getApplications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const db = req.app.locals.db;
     const soknader = await db.collection('soknader').find().toArray();
     res.status(200).json(soknader);
   } catch (error) {
-    next(error); // Feilhåndtering
+    console.error('Feil ved henting av søknader:', error);
+    res.status(500).json({ message: 'Feil ved henting av søknader' });
   }
 };

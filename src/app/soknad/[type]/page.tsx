@@ -83,7 +83,7 @@ const SoknadSkjema = () => {
     }
   };
   return (
-    <div className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-lg mt-10">
+    <div className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-lg mt-24">
       {/* Tilbakeknapp */}
       <Link href="/skjemaer" className="text-blue-500 hover:text-blue-700 flex items-center mb-4">
         <svg

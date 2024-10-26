@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "module": "commonjs", // Bruk CommonJS-moduler
-    "outDir": "./dist", // Utmappe for JavaScript-filer
+    "module": "commonjs",
+    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -12,6 +12,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "types": ["node", "express"], // Inkluder node og express typer
     "allowJs": true,
     "noEmit": true,
     "incremental": true,

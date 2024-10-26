@@ -11,26 +11,36 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     // Send POST-forespørsel til backend for autentisering
-    const response = await fetch("/api/login", {
+    const response = await fetch("/api/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, password }),
     });
-
+  
     if (response.ok) {
-      // Hvis innloggingen er vellykket, omdiriger til "Min side"
-      router.push("/");
+      const data = await response.json();
+      console.log("Innloggingsdata:", data); // Dette vil vise hele objektet for å se strukturen
+      
+      if (data.user && data.user.role) {
+        localStorage.setItem("userId", data.user._id);
+        localStorage.setItem("userType", data.user.role);
+        console.log("User role lagret:", data.user.role); // Bekreft at rollen blir lagret
+      } else {
+        console.log("User role mangler i responsdataen");
+      }
+    
+      router.push("/"); 
     } else {
       alert("Feil brukernavn eller passord");
-    }
-  };
+    }}
+    
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-lg shadow-lg">
+    <div className="max-w-md mx-auto mt-24 p-6 border rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold mb-4">Logg inn</h1>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
