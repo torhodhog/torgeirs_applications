@@ -20,31 +20,47 @@ const AdminPage = () => {
   const [applicationTypes, setApplicationTypes] = useState<{ [key: string]: number }>({});
   const [statusFilter, setStatusFilter] = useState<"alle" | "godkjent" | "avslått" | "innsendt">("alle");
   const [typeFilter, setTypeFilter] = useState<"alle" | "okonomi" | "tillatelse">("alle");
+  const [refresh, setRefresh] = useState(false); // Ny tilstand for å tvinge oppdatering
 
+  const fetchApplications = async () => {
+    try {
+      const res = await fetch("/api/soknader");
+      const data = await res.json();
+
+      setApplications(data);
+
+      // Beregn totalbeløp og antall søknader per type
+      let total = 0;
+      const typesCount: { [key: string]: number } = {};
+      data.forEach((app: Application) => {
+        if (app.belop) total += app.belop;
+        typesCount[app.soknadstype] = (typesCount[app.soknadstype] || 0) + 1;
+      });
+      setTotalAmount(total);
+      setApplicationTypes(typesCount);
+    } catch (error) {
+      console.error("Feil ved henting av søknader:", error);
+    }
+  };
+
+  // Hent søknader på nytt ved oppdatering av filter og refresh
   useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const res = await fetch("/api/soknader");
-        const data = await res.json();
-
-        setApplications(data);
-
-        // Beregn totalbeløp og antall søknader per type
-        let total = 0;
-        const typesCount: { [key: string]: number } = {};
-        data.forEach((app: Application) => {
-          if (app.belop) total += app.belop;
-          typesCount[app.soknadstype] = (typesCount[app.soknadstype] || 0) + 1;
-        });
-        setTotalAmount(total);
-        setApplicationTypes(typesCount);
-      } catch (error) {
-        console.error("Feil ved henting av søknader:", error);
-      }
-    };
-
     fetchApplications();
-  }, []);
+  }, [refresh, statusFilter, typeFilter]);
+
+  // Funksjon for å håndtere oppdatering av søknadsstatus
+  const handleStatusUpdate = async (id: string, newStatus: "godkjent" | "avslått") => {
+    try {
+      await fetch(`/api/soknad/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      setRefresh(!refresh); // Tving en oppdatering ved å bytte verdien av refresh
+    } catch (error) {
+      console.error("Feil ved oppdatering av søknadsstatus:", error);
+    }
+  };
 
   // Filtrere søknader basert på valgt status og type
   const filteredApplications = applications.filter(app => {

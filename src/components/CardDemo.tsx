@@ -21,7 +21,7 @@ export function CardDemo({ navn, bildeUrl, href, beskrivelse }: CardDemoProps) {
               src={bildeUrl}
               alt={navn}
               layout="fill"
-              objectFit="cover"  // Fyll bildet og beskjær det automatisk
+              objectFit="cover"  
               className="rounded-md"
             />
           </div>

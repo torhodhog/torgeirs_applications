@@ -38,19 +38,22 @@ const ApplicationDetailPage = () => {
     if (id) fetchApplication();
   }, [id]);
 
-  const handleStatusUpdate = async (newStatus: string) => {
-    try {
-      await fetch(`/api/soknader/${id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus, feedback }),
-      });
-      alert(`Søknad ${newStatus.toLowerCase()}!`);
-      router.push('/admin'); // Tilbake til admin-panelet
-    } catch (error) {
-      console.error("Feil ved oppdatering av søknadsstatus:", error);
-    }
-  };
+// Legg til `router.refresh()` etter statusoppdateringen i `handleStatusUpdate`
+const handleStatusUpdate = async (newStatus: string) => {
+   try {
+     await fetch(`/api/soknader/${id}/status`, {
+       method: 'PATCH',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ status: newStatus, feedback }),
+     });
+     alert(`Søknad ${newStatus.toLowerCase()}!`);
+     router.push(`/adminpage?updated=${Date.now()}`); // Tvinger en oppdatering i AdminPage
+   } catch (error) {
+     console.error("Feil ved oppdatering av søknadsstatus:", error);
+   }
+ };
+ 
+ 
 
   if (!application) return <p>Laster søknadsdetaljer...</p>;
 

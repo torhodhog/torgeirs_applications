@@ -12,7 +12,10 @@
       "dom.iterable",
       "esnext"
     ],
-    "types": ["node", "express"], // Inkluder node og express typer
+    "types": [
+      "node",
+      "express"
+    ],
     "allowJs": true,
     "noEmit": true,
     "incremental": true,

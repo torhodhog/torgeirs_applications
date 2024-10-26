@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import React from 'react';
 
 // Definer type for søknadsdata
 interface SoknadData {
