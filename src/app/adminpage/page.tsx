@@ -20,15 +20,20 @@ const AdminPage = () => {
   const [applicationTypes, setApplicationTypes] = useState<{ [key: string]: number }>({});
   const [statusFilter, setStatusFilter] = useState<"alle" | "godkjent" | "avslått" | "innsendt">("alle");
   const [typeFilter, setTypeFilter] = useState<"alle" | "okonomi" | "tillatelse">("alle");
-  const [refresh, setRefresh] = useState(false); // Ny tilstand for å tvinge oppdatering
-
+  const [refresh, setRefresh] = useState(false); 
   const fetchApplications = async () => {
     try {
-      const res = await fetch("/api/soknader");
+      const res = await fetch("/api/soknad"); // Sjekk at ruten er korrekt
+      if (!res.ok) {
+        console.error("Feil ved henting av søknader:", await res.text());
+        return;
+      }
+      
       const data = await res.json();
-
+      console.log("Hentede søknader:", data); // Debug-logg for å sjekke data
+  
       setApplications(data);
-
+  
       // Beregn totalbeløp og antall søknader per type
       let total = 0;
       const typesCount: { [key: string]: number } = {};
@@ -42,6 +47,7 @@ const AdminPage = () => {
       console.error("Feil ved henting av søknader:", error);
     }
   };
+  
 
   // Hent søknader på nytt ved oppdatering av filter og refresh
   useEffect(() => {
@@ -61,6 +67,16 @@ const AdminPage = () => {
       console.error("Feil ved oppdatering av søknadsstatus:", error);
     }
   };
+
+  const processedApplications = applications
+    .filter((app) => app.status === "godkjent" || app.status === "avslått")
+    .map((app) => ({
+      title: app.soknadstype === "okonomi" ? "Økonomi" : "Tillatelse",
+      name: app.navn || "Ukjent navn",
+      description: app.firma ? `Firma: ${app.firma}` : "Ingen firma oppgitt",
+      link: `/applications/${app._id}`,
+      status: app.status,
+    }));
 
   // Filtrere søknader basert på valgt status og type
   const filteredApplications = applications.filter(app => {

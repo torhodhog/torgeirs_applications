@@ -1,12 +1,12 @@
-import { Router } from 'express';
-import { createUser, loginUser } from '../controllers/userController';
+// import { Router } from 'express';
+// import { createUser, loginUser } from '../controllers/userController';
 
-const router = Router();
+// const router = Router();
 
-// Rute for å opprette en ny bruker
-router.post('/create-user', createUser);
+// // Rute for å opprette en ny bruker
+// router.post('/create-user', createUser);
 
-// Rute for innlogging
-router.post('/login', loginUser);
+// // Rute for innlogging
+// router.post('/login', loginUser);
 
-export default router;
+// export default router;

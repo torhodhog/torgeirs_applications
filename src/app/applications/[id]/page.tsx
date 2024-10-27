@@ -26,34 +26,46 @@ const ApplicationDetailPage = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const res = await fetch(`/api/soknader/${id}`);
-        if (!res.ok) throw new Error("Søknad ikke funnet");
+        console.log("Fetching application with ID:", id); // Log ID-en for verifisering
+  
+        // Merk at `id` må være riktig og samsvare med rutenavn
+        const res = await fetch(`/api/soknad/${id}`);
+        
+        if (!res.ok) {
+          throw new Error(`Søknad ikke funnet eller annen feil. Status: ${res.status}`);
+        }
+  
         const data = await res.json();
+        console.log("Application data received:", data); // Log mottatt data
         setApplication(data);
       } catch (error) {
         console.error("Feil ved henting av søknad:", error);
       }
     };
-
+  
     if (id) fetchApplication();
   }, [id]);
+  
 
-// Legg til `router.refresh()` etter statusoppdateringen i `handleStatusUpdate`
-const handleStatusUpdate = async (newStatus: string) => {
-   try {
-     await fetch(`/api/soknader/${id}/status`, {
-       method: 'PATCH',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({ status: newStatus, feedback }),
-     });
-     alert(`Søknad ${newStatus.toLowerCase()}!`);
-     router.push(`/adminpage?updated=${Date.now()}`); // Tvinger en oppdatering i AdminPage
-   } catch (error) {
-     console.error("Feil ved oppdatering av søknadsstatus:", error);
-   }
- };
- 
- 
+  const handleStatusUpdate = async (newStatus: string) => {
+    try {
+      const response = await fetch(`/api/soknad/${id}`, { // Oppdater URL til `/api/soknad/${id}`
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus, feedback }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Feil ved oppdatering av søknadsstatus. Status: ${response.status}`);
+      }
+      
+      alert(`Søknad ${newStatus.toLowerCase()}!`);
+      router.push(`/adminpage?updated=${Date.now()}`); // Tving en oppdatering i AdminPage
+    } catch (error) {
+      console.error("Feil ved oppdatering av søknadsstatus:", error);
+    }
+  };
+  
 
   if (!application) return <p>Laster søknadsdetaljer...</p>;
 

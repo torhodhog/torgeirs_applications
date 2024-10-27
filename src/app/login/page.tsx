@@ -11,33 +11,46 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Send POST-forespørsel til backend for autentisering
-    const response = await fetch("/api/users/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
-  
-    if (response.ok) {
-      const data = await response.json();
-      console.log("Innloggingsdata:", data); // Dette vil vise hele objektet for å se strukturen
-      
-      if (data.user && data.user.role) {
-        localStorage.setItem("userId", data.user._id);
-        localStorage.setItem("userType", data.user.role);
-        console.log("User role lagret:", data.user.role); // Bekreft at rollen blir lagret
+
+    try {
+      console.log("Starter innlogging...");
+      console.log("Sender brukernavn og passord:", { username, password });
+
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      console.log("Responsstatus:", response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Innloggingsdata:", data); // Dette viser hele responsen fra backend
+
+        // Sjekk om `data.user` finnes og har nødvendig informasjon
+        if (data.user && data.user._id && data.user.role) {
+          localStorage.setItem("userId", data.user._id);
+          localStorage.setItem("userType", data.user.role);
+          console.log("Bruker er logget inn med rolle:", data.user.role);
+
+          // Omdiriger til hjemmesiden
+          router.push("/");
+        } else {
+          console.error("Manglende brukerdata i responsen");
+          alert("Innlogging mislyktes: Manglende brukerdata");
+        }
       } else {
-        console.log("User role mangler i responsdataen");
+        console.error("Innlogging mislyktes: Feil brukernavn eller passord");
+        alert("Feil brukernavn eller passord");
       }
-    
-      router.push("/"); 
-    } else {
-      alert("Feil brukernavn eller passord");
-    }}
-    
+    } catch (error) {
+      console.error("Feil ved innlogging:", error);
+      alert("Det oppstod en feil under innloggingen. Prøv igjen senere.");
+    }
+  };
 
   return (
     <div className="max-w-md mx-auto mt-24 p-6 border rounded-lg shadow-lg">
