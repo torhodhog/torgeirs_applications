@@ -13,9 +13,10 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-// MongoDB connection URL
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://hogheim:2uK9xqZqHXpdTM2C@cluster0.t5cw8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  throw new Error("MONGO_URI is not defined in the environment variables.");
+}
 app.prepare().then(() => {
   const server = express();
 
@@ -28,7 +29,7 @@ app.prepare().then(() => {
     .then(() => {
       console.log('Connected to MongoDB');
       
-      const db = client.db('thh_applications'); // Sett inn riktig database
+      const db = client.db('thh_applications'); 
       server.locals.db = db;
       console.log('Database set on server', db.databaseName);
 
