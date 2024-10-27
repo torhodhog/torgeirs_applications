@@ -16,7 +16,7 @@ const NavItems = () => {
     <div className="flex gap-4 h-full mt-5">
       {/* Vis lenke basert på brukertype */}
       {userType === "admin" ? (
-        <Link href="/admin">Admin Panel</Link>
+        <Link href="/adminpage">Admin Panel</Link>
       ) : userType === "user" ? (
         <Link href="/profile">Min Side</Link>
       ) : (
