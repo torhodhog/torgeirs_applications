@@ -13,7 +13,7 @@ const perks = [
   {
     name: "Legg til dokumenter",
     Icon: FileText,
-    description: "Legg til dokumenter for å få en bedre søknad",
+    description: "Legg til dokumenter for å få en bedre og mer utfyllende søknad",
   },
 ];
 

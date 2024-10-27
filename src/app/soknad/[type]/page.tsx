@@ -199,7 +199,7 @@ const SoknadSkjema = () => {
         {type === 'tillatelse' && (
           <div>
             <label htmlFor="tillatelsestype" className="block text-gray-700 font-medium">
-              Tillatelsestype:
+              Tillatelsestype :
             </label>
             <input
               type="text"
