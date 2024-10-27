@@ -15,7 +15,7 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = "mongodb+srv://hogheim:2uK9xqZqHXpdTM2C@cluster0.t5cw8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 if (!MONGODB_URI) {
   throw new Error("MONGO_URI is not defined in the environment variables.");
 }
