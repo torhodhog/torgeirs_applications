@@ -8,15 +8,15 @@ import userRouter from './src/routes/userRoutes';
 
 dotenv.config();
 console.log("NODE_ENV:", process.env.NODE_ENV);  // Legg til denne
-console.log("MONGO_URI in production:", process.env.MONGO_URI);
+console.log("MONGODB_URI in production:", process.env.MONGO_URI);
 
 const port = parseInt(process.env.PORT || '3000', 10);
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const MONGO_URI = process.env.MONGO_URI;
-if (!MONGO_URI) {
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
   throw new Error("MONGO_URI is not defined in the environment variables.");
 }
 app.prepare().then(() => {
@@ -26,7 +26,7 @@ app.prepare().then(() => {
   server.use(express.json());
 
   // MongoDB-tilkobling
-  const client = new MongoClient(MONGO_URI);
+  const client = new MongoClient(MONGODB_URI);
   client.connect()
     .then(() => {
       console.log('Connected to MongoDB');
