@@ -7,6 +7,8 @@ import userRouter from './src/routes/userRoutes';
 // import soknadIdRoutes from './src/routes/soknadIdRoutes';
 
 dotenv.config();
+console.log("NODE_ENV:", process.env.NODE_ENV);  // Legg til denne
+console.log("MONGO_URI in production:", process.env.MONGO_URI);
 
 const port = parseInt(process.env.PORT || '3000', 10);
 const dev = process.env.NODE_ENV !== 'production';
