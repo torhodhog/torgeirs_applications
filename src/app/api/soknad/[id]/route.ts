@@ -1,17 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient, ObjectId, Db } from 'mongodb';
 
 const client = new MongoClient(process.env.MONGODB_URI || '');
+let db: Db | null = null;
 
-// @ts-ignore - Ignorerer feilen knyttet til params her
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  try {
+async function connectToDatabase() {
+  if (!db) {
     await client.connect();
-    const db = client.db('thh_applications');
+    db = client.db('thh_applications');
+  }
+  return db;
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const url = new URL(request.url);
+    const id = url.pathname.split('/').pop(); // Henter ID direkte fra URL-slutten
+    
+    if (!id) {
+      return NextResponse.json({ message: 'ID mangler i forespørselen' }, { status: 400 });
+    }
+
+    const db = await connectToDatabase();
     const collection = db.collection('soknader');
     
-    // Bruker `params.id` som en ObjectId for å hente dokumentet
-    const application = await collection.findOne({ _id: new ObjectId(params.id) });
+    const application = await collection.findOne({ _id: new ObjectId(id) });
     
     if (!application) {
       return NextResponse.json({ message: 'Søknad ikke funnet' }, { status: 404 });
@@ -23,3 +36,4 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ message: 'Feil ved henting av søknad' }, { status: 500 });
   }
 }
+
