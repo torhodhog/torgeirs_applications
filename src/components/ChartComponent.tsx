@@ -39,7 +39,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ applicationData, financ
 
   return (
     <div className="chart-container">
-      <h2 className='mb-8'>Oversikt over Søknadstyper</h2>
+      <h2 className='mb-8 mt-12'>Oversikt over Søknadstyper</h2>
       <div className="chart-wrapper">
         <Bar data={barData} options={chartOptions} />
       </div>

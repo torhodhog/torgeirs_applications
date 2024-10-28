@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import React from 'react';
+import React, {useState} from 'react';
 
 // Definer type for søknadsdata
 interface SoknadData {
@@ -54,6 +53,7 @@ const SoknadSkjema = () => {
     if (soknadstype === 'tillatelse') {
       soknadData.tillatelsestype = tillatelsestype;
     }
+    console.log("SoknadData før innsending:", soknadData);
 
     try {
       const response = await fetch('/api/soknad', {
@@ -83,6 +83,7 @@ const SoknadSkjema = () => {
       alert('Noe gikk galt ved innsending.');
     }
   };
+
   return (
     <div className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-lg mt-24">
       {/* Tilbakeknapp */}
@@ -120,14 +121,17 @@ const SoknadSkjema = () => {
         </div>
         
         <div>
-         <label htmlFor="firma" className='block text-gray-700 font-medium'>Firma</label>
-         <input type="text"
-         id='firma'
-         name='firma'
-         className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-         value={firma}
-         onChange={(e) => setFirma(e.target.value)}
-         required
+          <label htmlFor="firma" className="block text-gray-700 font-medium">
+            Firma:
+          </label>
+          <input
+            type="text"
+            id="firma"
+            name="firma"
+            placeholder='Fyll ut hvis du søker på vegne av et firma'
+            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            value={firma}
+            onChange={(e) => setFirma(e.target.value)}
           />
         </div>
 
@@ -199,7 +203,7 @@ const SoknadSkjema = () => {
         {type === 'tillatelse' && (
           <div>
             <label htmlFor="tillatelsestype" className="block text-gray-700 font-medium">
-              Tillatelsestype :
+              Tillatelsestype:
             </label>
             <input
               type="text"

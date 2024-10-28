@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "../../components/MaxWidthWrapper";
-import CardHoverEffectDemo from "../../components/CardHoverEffectDemo";
+// import CardHoverEffectDemo from "../../components/CardHoverEffectDemo";
 import ProcessedApplicationsGrid from "../../components/ProcessedApplicationsGrid";
 import ChartComponent from "../../components/ChartComponent"; // Sørg for at denne importen er riktig
 
@@ -21,8 +21,8 @@ const AdminPage = () => {
   const [applicationTypes, setApplicationTypes] = useState<{ [key: string]: number }>({});
   const [statusFilter, setStatusFilter] = useState<"alle" | "godkjent" | "avslått" | "innsendt">("alle");
   const [typeFilter, setTypeFilter] = useState<"alle" | "okonomi" | "tillatelse">("alle");
-  const [refresh, setRefresh] = useState(false); 
-  const [applicationData, setApplicationData] = useState<{ [key: string]: number }>({});
+  const [refresh] = useState(false); 
+  // const [applicationData, setApplicationData] = useState<{ [key: string]: number }>({});
   const [financeData, setFinanceData] = useState<{ approved: number; rejected: number; total: number }>({
     approved: 0,
     rejected: 0,
@@ -77,29 +77,29 @@ const AdminPage = () => {
     fetchApplications();
   }, [refresh, statusFilter, typeFilter]);
 
-  // Funksjon for å håndtere oppdatering av søknadsstatus
-  const handleStatusUpdate = async (id: string, newStatus: "godkjent" | "avslått") => {
-    try {
-      await fetch(`/api/soknad/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      setRefresh(!refresh); // Tving en oppdatering ved å bytte verdien av refresh
-    } catch (error) {
-      console.error("Feil ved oppdatering av søknadsstatus:", error);
-    }
-  };
+  // // Funksjon for å håndtere oppdatering av søknadsstatus
+  // const handleStatusUpdate = async (id: string, newStatus: "godkjent" | "avslått") => {
+  //   try {
+  //     await fetch(`/api/soknad/${id}/status`, {
+  //       method: "PATCH",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ status: newStatus }),
+  //     });
+  //     setRefresh(!refresh); // Tving en oppdatering ved å bytte verdien av refresh
+  //   } catch (error) {
+  //     console.error("Feil ved oppdatering av søknadsstatus:", error);
+  //   }
+  // };
 
-  const processedApplications = applications
-    .filter((app) => app.status === "godkjent" || app.status === "avslått")
-    .map((app) => ({
-      title: app.soknadstype === "okonomi" ? "Økonomi" : "Tillatelse",
-      name: app.navn || "Ukjent navn",
-      description: app.firma ? `Firma: ${app.firma}` : "Ingen firma oppgitt",
-      link: `/applications/${app._id}`,
-      status: app.status,
-    }));
+  // const processedApplications = applications
+  //   .filter((app) => app.status === "godkjent" || app.status === "avslått")
+  //   .map((app) => ({
+  //     title: app.soknadstype === "okonomi" ? "Økonomi" : "Tillatelse",
+  //     name: app.navn || "Ukjent navn",
+  //     description: app.firma ? `Firma: ${app.firma}` : "Ingen firma oppgitt",
+  //     link: `/applications/${app._id}`,
+  //     status: app.status,
+  //   }));
 
   // Filtrere søknader basert på valgt status og type
   const filteredApplications = applications.filter(app => {
@@ -119,7 +119,7 @@ const AdminPage = () => {
   }));
 
   return (
-    <div className="admin-panel max-w-6xl mx-auto mt-10 p-6 border rounded-lg shadow-lg">
+    <div className="admin-panel max-w-6xl mx-auto mt-20 p-6 border rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold mb-4">Adminpanel</h1>
 
       {/* Visning av statistikk */}
@@ -168,7 +168,7 @@ const AdminPage = () => {
 
       {/* Utsikt over søknader basert på filter */}
       <MaxWidthWrapper>
-        <div className="mt-8">
+        {/* <div className="mt-8">
           <h2 className="text-xl font-semibold mb-4">
             {statusFilter === "alle" && typeFilter === "alle" ? "Alle søknader" : `${statusFilter === "alle" ? "" : statusFilter} ${typeFilter === "alle" ? "" : typeFilter}`}
           </h2>
@@ -177,7 +177,7 @@ const AdminPage = () => {
           ) : (
             <CardHoverEffectDemo applications={mappedApplications} />
           )}
-        </div>
+        </div> */}
         <ProcessedApplicationsGrid applications={mappedApplications} />
         <ChartComponent applicationData={applicationTypes} financeData={financeData} />
       </MaxWidthWrapper>

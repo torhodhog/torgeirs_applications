@@ -1,6 +1,5 @@
 import React from "react";
 
-
 interface ProcessedApplication {
   title: string;
   name: string;
@@ -16,18 +15,13 @@ interface ProcessedApplicationsGridProps {
 const ProcessedApplicationsGrid: React.FC<ProcessedApplicationsGridProps> = ({
   applications,
 }) => {
-  
-  const filteredApplications = applications.filter(
-    (app) => app.status === "godkjent" || app.status === "avslått"
-  );
-
   return (
     <div className="max-w-5xl mx-auto px-8 mt-12">
       <div className="flex justify-center items-center">
         {/* Eventuelt innhold her */}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredApplications.map((app) => (
+        {applications.map((app) => (
           <div
             key={app.link}
             className={`p-4 rounded-lg shadow-md ${

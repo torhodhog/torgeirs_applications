@@ -6,6 +6,7 @@ interface AdminApplication {
   name: string;
   description: string;
   link: string;
+  status: string;
 }
 
 export function CardHoverEffectDemo({ applications }: { applications: AdminApplication[] }) {
