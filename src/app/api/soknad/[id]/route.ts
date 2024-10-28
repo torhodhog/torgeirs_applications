@@ -1,39 +1,87 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient, ObjectId, Db } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
-const client = new MongoClient(process.env.MONGODB_URI || '');
-let db: Db | null = null;
+let client: MongoClient | null = null;
 
+// Funksjon for å koble til MongoDB og gjenbruke tilkoblingen
 async function connectToDatabase() {
-  if (!db) {
+  if (!client) {
+    client = new MongoClient(process.env.MONGODB_URI || '');
     await client.connect();
-    db = client.db('thh_applications');
+    console.log("Connected to MongoDB");
   }
-  return db;
+  return client.db('thh_applications');
 }
 
-export async function GET(request: NextRequest) {
+// POST forespørsel for å legge til en ny søknad
+export async function POST(req: NextRequest) {
   try {
-    const url = new URL(request.url);
-    const id = url.pathname.split('/').pop(); // Henter ID direkte fra URL-slutten
-    
-    if (!id) {
-      return NextResponse.json({ message: 'ID mangler i forespørselen' }, { status: 400 });
+    const body = await req.json();
+    console.log("Mottatt data for innsending:", body); // Logg innsendingen for feilsøking
+    const db = await connectToDatabase();
+    const collection = db.collection('soknader');
+    const result = await collection.insertOne(body);
+    return NextResponse.json({ insertedId: result.insertedId }, { status: 201 });
+  } catch (error) {
+    console.error("Feil ved innsending av søknad:", error);
+    return NextResponse.json({ error: 'Feil ved innsending av søknad' }, { status: 500 });
+  }
+}
+
+// GET forespørsel for å hente søknader
+export async function GET(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
+
+    const db = await connectToDatabase();
+    const collection = db.collection('soknader');
+
+    if (id && ObjectId.isValid(id)) {
+      console.log("Henter søknad med ID:", id); // Logg for feilsøking
+      const application = await collection.findOne({ _id: new ObjectId(id) });
+
+      if (!application) {
+        return NextResponse.json({ error: 'Søknad ikke funnet' }, { status: 404 });
+      }
+
+      return NextResponse.json(application, { status: 200 });
+    } else {
+      console.log("Henter alle søknader fra databasen"); // Logg for feilsøking
+      const soknader = await collection.find().toArray();
+      return NextResponse.json(soknader, { status: 200 });
+    }
+  } catch (error) {
+    console.error("Feil ved henting av søknader:", error);
+    return NextResponse.json({ error: 'Feil ved henting av søknader' }, { status: 500 });
+  }
+}
+
+// PATCH forespørsel for å oppdatere statusen til en søknad
+export async function PATCH(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
+    const { status, feedback } = await req.json();
+
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Ugyldig ID' }, { status: 400 });
     }
 
     const db = await connectToDatabase();
     const collection = db.collection('soknader');
-    
-    const application = await collection.findOne({ _id: new ObjectId(id) });
-    
-    if (!application) {
-      return NextResponse.json({ message: 'Søknad ikke funnet' }, { status: 404 });
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { status, feedback } }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: 'Søknad ikke funnet' }, { status: 404 });
     }
 
-    return NextResponse.json(application, { status: 200 });
+    return NextResponse.json({ message: `Søknad ${status.toLowerCase()}!` }, { status: 200 });
   } catch (error) {
-    console.error('Feil ved henting av søknad:', error);
-    return NextResponse.json({ message: 'Feil ved henting av søknad' }, { status: 500 });
+    console.error("Feil ved oppdatering av søknad:", error);
+    return NextResponse.json({ error: 'Feil ved oppdatering av søknad' }, { status: 500 });
   }
 }
-

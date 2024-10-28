@@ -15,6 +15,7 @@ interface ApplicationDetail {
   tillatelsestype?: string;
   begrunnelse?: string;
   status: string;
+  feedback?: string;
 }
 
 const ApplicationDetailPage = () => {
@@ -81,6 +82,8 @@ const ApplicationDetailPage = () => {
       {application.kontonummer && <p><strong>Kontonummer:</strong> {application.kontonummer}</p>}
       {application.tillatelsestype && <p><strong>Tillatelsestype:</strong> {application.tillatelsestype}</p>}
       {application.begrunnelse && <p><strong>Begrunnelse:</strong> {application.begrunnelse}</p>}
+      {application.status && <p><strong>Status:</strong> {application.status}</p>}
+      {application.feedback && <p><strong>Tilbakemelding:</strong> {application.feedback}</p>}
 
       <h2 className="text-xl font-semibold mt-6">Tilbakemelding</h2>
       <textarea
@@ -92,13 +95,13 @@ const ApplicationDetailPage = () => {
 
       <div className="mt-6 flex gap-4">
         <button
-          onClick={() => handleStatusUpdate('Godkjent')}
+          onClick={() => handleStatusUpdate('godkjent')}
           className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
         >
           Godkjenn
         </button>
         <button
-          onClick={() => handleStatusUpdate('Avslått')}
+          onClick={() => handleStatusUpdate('avslått')}
           className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
         >
           Avslå

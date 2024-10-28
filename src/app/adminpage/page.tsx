@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "../../components/MaxWidthWrapper";
 import CardHoverEffectDemo from "../../components/CardHoverEffectDemo";
 import ProcessedApplicationsGrid from "../../components/ProcessedApplicationsGrid";
+import ChartComponent from "../../components/ChartComponent"; // Sørg for at denne importen er riktig
 
 interface Application {
   _id: string;
@@ -21,6 +22,13 @@ const AdminPage = () => {
   const [statusFilter, setStatusFilter] = useState<"alle" | "godkjent" | "avslått" | "innsendt">("alle");
   const [typeFilter, setTypeFilter] = useState<"alle" | "okonomi" | "tillatelse">("alle");
   const [refresh, setRefresh] = useState(false); 
+  const [applicationData, setApplicationData] = useState<{ [key: string]: number }>({});
+  const [financeData, setFinanceData] = useState<{ approved: number; rejected: number; total: number }>({
+    approved: 0,
+    rejected: 0,
+    total: 0,
+  });
+  
   const fetchApplications = async () => {
     try {
       const res = await fetch("/api/soknad"); // Sjekk at ruten er korrekt
@@ -30,7 +38,7 @@ const AdminPage = () => {
       }
       
       const data = await res.json();
-      console.log("Hentede søknader:", data); // Debug-logg for å sjekke data
+      console.log("Hentede søknader:", data); 
   
       setApplications(data);
   
@@ -43,11 +51,26 @@ const AdminPage = () => {
       });
       setTotalAmount(total);
       setApplicationTypes(typesCount);
+
+      // Beregn finansdata
+      const typeCounts: { [key: string]: number } = {};
+      let approvedSum = 0;
+      let rejectedSum = 0;
+      let totalSum = 0;
+
+      data.forEach((app: Application) => {
+        typeCounts[app.soknadstype] = (typeCounts[app.soknadstype] || 0) + 1;
+        if (app.status === 'godkjent' && app.belop) approvedSum += app.belop;
+        if (app.status === 'avslått' && app.belop) rejectedSum += app.belop;
+        if (app.belop) totalSum += app.belop;
+      });
+
+      setApplicationTypes(typeCounts);
+      setFinanceData({ approved: approvedSum, rejected: rejectedSum, total: totalSum });
     } catch (error) {
       console.error("Feil ved henting av søknader:", error);
     }
   };
-  
 
   // Hent søknader på nytt ved oppdatering av filter og refresh
   useEffect(() => {
@@ -156,6 +179,7 @@ const AdminPage = () => {
           )}
         </div>
         <ProcessedApplicationsGrid applications={mappedApplications} />
+        <ChartComponent applicationData={applicationTypes} financeData={financeData} />
       </MaxWidthWrapper>
 
     </div>

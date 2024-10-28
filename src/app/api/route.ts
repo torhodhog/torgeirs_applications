@@ -28,16 +28,57 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET forespørsel for å hente alle søknader
-export async function GET() {
+// GET forespørsel for å hente en spesifikk søknad basert på ID
+export async function GET(req: NextRequest) {
   try {
-    console.log("Henter søknader fra databasen"); // Logg for feilsøking
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
+
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Ugyldig ID' }, { status: 400 });
+    }
+
+    console.log("Henter søknad med ID:", id); // Logg for feilsøking
     const db = await connectToDatabase();
     const collection = db.collection('soknader');
-    const soknader = await collection.find().toArray();
-    return NextResponse.json(soknader, { status: 200 });
+    const application = await collection.findOne({ _id: new ObjectId(id) });
+
+    if (!application) {
+      return NextResponse.json({ error: 'Søknad ikke funnet' }, { status: 404 });
+    }
+
+    return NextResponse.json(application, { status: 200 });
   } catch (error) {
-    console.error("Feil ved henting av søknader:", error);
-    return NextResponse.json({ error: 'Feil ved henting av søknader' }, { status: 500 });
+    console.error("Feil ved henting av søknad:", error);
+    return NextResponse.json({ error: 'Feil ved henting av søknad' }, { status: 500 });
+  }
+}
+
+// PATCH forespørsel for å oppdatere statusen til en søknad
+export async function PATCH(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
+    const { status, feedback } = await req.json();
+
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Ugyldig ID' }, { status: 400 });
+    }
+
+    const db = await connectToDatabase();
+    const collection = db.collection('soknader');
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { status, feedback } }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: 'Søknad ikke funnet' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: `Søknad ${status.toLowerCase()}!` }, { status: 200 });
+  } catch (error) {
+    console.error("Feil ved oppdatering av søknad:", error);
+    return NextResponse.json({ error: 'Feil ved oppdatering av søknad' }, { status: 500 });
   }
 }
