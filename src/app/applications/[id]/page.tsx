@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 interface ApplicationDetail {
   _id: string;
+  type_id: string;
   navn: string;
   epost: string;
   beskrivelse: string;
@@ -88,17 +89,19 @@ const ApplicationDetailPage = () => {
       </Link>
     
       <h1 className="text-2xl font-bold mb-4 mt-12">Søknadsdetaljer</h1>
-      <p><strong>Navn:</strong> {application.navn}</p>
-      <p><strong>E-post:</strong> {application.epost}</p>
-      <p><strong>Beskrivelse:</strong> {application.beskrivelse}</p>
-      <p><strong>Type:</strong> {application.soknadstype}</p>
-      {application.firma && <p><strong>Firma:</strong> {application.firma}</p>}
-      {application.belop && <p><strong>Beløp:</strong> {application.belop} kr</p>}
-      {application.kontonummer && <p><strong>Kontonummer:</strong> {application.kontonummer}</p>}
-      {application.tillatelsestype && <p><strong>Tillatelsestype:</strong> {application.tillatelsestype}</p>}
-      {application.begrunnelse && <p><strong>Begrunnelse:</strong> {application.begrunnelse}</p>}
-      {application.status && <p><strong>Status:</strong> {application.status}</p>}
-      {application.feedback && <p><strong>Tilbakemelding:</strong> {application.feedback}</p>}
+            <p style={{ marginBottom: '10px' }}><strong>Navn:</strong> {application.navn}</p>
+      <p style={{ marginBottom: '10px' }}><strong>ID:</strong>{application._id}</p>
+      <p style={{ marginBottom: '10px' }}><strong>Type ID:</strong> {application.type_id}</p>
+      <p style={{ marginBottom: '10px' }}><strong>E-post:</strong> {application.epost}</p>
+      <p style={{ marginBottom: '10px' }}><strong>Beskrivelse:</strong> {application.beskrivelse}</p>
+      <p style={{ marginBottom: '10px' }}><strong>Type:</strong> {application.soknadstype}</p>
+      {application.firma && <p style={{ marginBottom: '10px' }}><strong>Firma:</strong> {application.firma}</p>}
+      {application.belop && <p style={{ marginBottom: '10px' }}><strong>Beløp:</strong> {application.belop} kr</p>}
+      {application.kontonummer && <p style={{ marginBottom: '10px' }}><strong>Kontonummer:</strong> {application.kontonummer}</p>}
+      {application.tillatelsestype && <p style={{ marginBottom: '10px' }}><strong>Tillatelsestype:</strong> {application.tillatelsestype}</p>}
+      {application.begrunnelse && <p style={{ marginBottom: '10px' }}><strong>Begrunnelse:</strong> {application.begrunnelse}</p>}
+      {application.status && <p style={{ marginBottom: '10px' }}><strong>Status:</strong> {application.status}</p>}
+      {application.feedback && <p style={{ marginBottom: '10px' }}><strong>Tilbakemelding:</strong> {application.feedback}</p>}
 
       <h2 className="text-xl font-semibold mt-6">Tilbakemelding</h2>
       <textarea

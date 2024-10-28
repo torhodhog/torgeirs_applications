@@ -89,31 +89,4 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH forespørsel for å oppdatere statusen til en søknad
-export async function PATCH(req: NextRequest) {
-  try {
-    const url = new URL(req.url);
-    const id = url.pathname.split('/').pop();
-    const { status, feedback } = await req.json();
 
-    if (!id || !ObjectId.isValid(id)) {
-      return NextResponse.json({ error: 'Ugyldig ID' }, { status: 400 });
-    }
-
-    const db = await connectToDatabase();
-    const collection = db.collection('soknader');
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { status, feedback } }
-    );
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ error: 'Søknad ikke funnet' }, { status: 404 });
-    }
-
-    return NextResponse.json({ message: `Søknad ${status.toLowerCase()}!` }, { status: 200 });
-  } catch (error) {
-    console.error("Feil ved oppdatering av søknad:", error);
-    return NextResponse.json({ error: 'Feil ved oppdatering av søknad' }, { status: 500 });
-  }
-}
