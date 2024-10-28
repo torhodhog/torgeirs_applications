@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 
 interface ApplicationDetail {
   _id: string;
@@ -71,8 +72,22 @@ const ApplicationDetailPage = () => {
   if (!application) return <p>Laster søknadsdetaljer...</p>;
 
   return (
-    <div className="application-detail max-w-xl mx-auto mt-10 p-6 border rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-4">Søknadsdetaljer</h1>
+       <div className="application-detail max-w-xl mx-auto mt-20 p-6 border rounded-lg shadow-lg">
+      {/* Tilbakeknapp */}
+      <Link href="/adminpage" className="text-blue-500 hover:text-blue-700 flex items-center mb-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Tilbake til adminpanel
+      </Link>
+    
+      <h1 className="text-2xl font-bold mb-4 mt-12">Søknadsdetaljer</h1>
       <p><strong>Navn:</strong> {application.navn}</p>
       <p><strong>E-post:</strong> {application.epost}</p>
       <p><strong>Beskrivelse:</strong> {application.beskrivelse}</p>
@@ -106,6 +121,7 @@ const ApplicationDetailPage = () => {
         >
           Avslå
         </button>
+               <button onClick={() => window.print()}>Skriv ut</button>
       </div>
     </div>
   );

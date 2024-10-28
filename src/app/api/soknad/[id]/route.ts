@@ -12,6 +12,12 @@ async function connectToDatabase() {
   return client.db('thh_applications');
 }
 
+// Funksjon for å generere en unik type_id
+const generateTypeId = (type: string) => {
+  const randomId = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `${type}-${randomId}`;
+};
+
 // GET forespørsel for å hente en spesifikk søknad basert på ID
 export async function GET(req: NextRequest) {
   try {
@@ -38,30 +44,27 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function PATCH(req: NextRequest) {
+// POST forespørsel for å opprette en ny søknad
+export async function POST(req: NextRequest) {
   try {
-    const url = new URL(req.url);
-    const id = url.pathname.split('/').pop();
-    const { status, feedback } = await req.json();
-
-    if (!id || !ObjectId.isValid(id)) {
-      return NextResponse.json({ error: 'Ugyldig ID' }, { status: 400 });
-    }
-
     const db = await connectToDatabase();
     const collection = db.collection('soknader');
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { status, feedback } }
-    );
+    const body = await req.json();
 
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ error: 'Søknad ikke funnet' }, { status: 404 });
-    }
+    // Generer en unik type_id basert på søknadstypen
+    const type_id = generateTypeId(body.soknadstype);
 
-    return NextResponse.json({ message: `Søknad ${status.toLowerCase()}!` }, { status: 200 });
+    const newApplication = {
+      ...body,
+      type_id,
+      opprettetDato: new Date(),
+      status: 'innsendt',
+    };
+
+    const result = await collection.insertOne(newApplication);
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    console.error("Feil ved oppdatering av søknad:", error);
-    return NextResponse.json({ error: 'Feil ved oppdatering av søknad' }, { status: 500 });
+    console.error("Feil ved oppretting av søknad:", error);
+    return NextResponse.json({ error: 'Feil ved oppretting av søknad' }, { status: 500 });
   }
 }

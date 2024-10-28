@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import React, {useState} from 'react';
+import React from 'react';
 
 // Definer type for søknadsdata
 interface SoknadData {
@@ -14,7 +15,14 @@ interface SoknadData {
   kontonummer?: string; 
   tillatelsestype?: string; 
   firma?: string; 
+  type_id: string; // Legger til type_id
 }
+
+// Funksjon for å generere en unik type_id
+const generateTypeId = (type: string) => {
+  const randomId = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `${type}-${randomId}`;
+};
 
 const SoknadSkjema = () => {
   const { type } = useParams(); 
@@ -40,7 +48,8 @@ const SoknadSkjema = () => {
       epost,
       beskrivelse,
       soknadstype,
-      firma,  
+      firma,
+      type_id: generateTypeId(soknadstype), // Legger til type_id basert på søknadstypen
     };
 
     // Legg til felter som er spesifikke for økonomiske søknader
@@ -53,7 +62,6 @@ const SoknadSkjema = () => {
     if (soknadstype === 'tillatelse') {
       soknadData.tillatelsestype = tillatelsestype;
     }
-    console.log("SoknadData før innsending:", soknadData);
 
     try {
       const response = await fetch('/api/soknad', {

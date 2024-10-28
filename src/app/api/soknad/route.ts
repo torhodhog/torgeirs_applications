@@ -1,34 +1,3 @@
-// import { NextRequest, NextResponse } from 'next/server';
-// import { MongoClient } from 'mongodb';
-// console.log("submit.ts file loaded");
-
-// const client = new MongoClient(process.env.MONGODB_URI || '');
-
-// export async function GET() {
-//   try {
-//     const db = client.db('thh_applications');
-//     const collection = db.collection('soknader');
-//     const soknader = await collection.find().toArray();
-//     return NextResponse.json(soknader, { status: 200 });
-//   } catch (error) {
-//     console.error("Error fetching applications:", error);
-//     return NextResponse.json({ error: 'Error fetching applications' }, { status: 500 });
-//   }
-// }
-
-// export async function POST(req: NextRequest) {
-//   try {
-//     const body = await req.json();
-//     const db = client.db('thh_applications');
-//     const collection = db.collection('soknader');
-//     const result = await collection.insertOne(body);
-//     return NextResponse.json({ insertedId: result.insertedId }, { status: 201 });
-//   } catch (error) {
-//     console.error("Error creating application:", error);
-//     return NextResponse.json({ error: 'Error creating application' }, { status: 500 });
-//   }
-// }
-
 
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
@@ -81,6 +50,15 @@ export async function POST(req: NextRequest) {
 
     const db = await connectToDatabase();
     const collection = db.collection('soknader');
+    
+    
+    const generateTypeId = (type: string) => {
+      const randomId = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      return `${type}-${randomId}`;
+    };
+
+    // Generer en unik type_id basert på søknadstypen
+    const type_id = generateTypeId(body.soknadstype);
 
     const soknad = {
       _id: new ObjectId(),
@@ -88,6 +66,7 @@ export async function POST(req: NextRequest) {
       epost: body.epost || '',
       beskrivelse: body.beskrivelse || '',
       soknadstype: body.soknadstype || '',
+      type_id, // Legg til type_id her
       status: 'innsendt',
       opprettetDato: new Date(),
       userId: body.userId ? new ObjectId(body.userId) : null,

@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "../../components/MaxWidthWrapper";
-// import CardHoverEffectDemo from "../../components/CardHoverEffectDemo";
 import ProcessedApplicationsGrid from "../../components/ProcessedApplicationsGrid";
-import ChartComponent from "../../components/ChartComponent"; // Sørg for at denne importen er riktig
+import ChartComponent from "../../components/ChartComponent"; 
 
 interface Application {
   _id: string;
@@ -18,6 +17,7 @@ interface Application {
 const AdminPage = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [approvedEconomyTotal, setApprovedEconomyTotal] = useState<number>(0); // Ny tilstand for godkjente økonomiske søknader
   const [applicationTypes, setApplicationTypes] = useState<{ [key: string]: number }>({});
   const [statusFilter, setStatusFilter] = useState<"alle" | "godkjent" | "avslått" | "innsendt">("alle");
   const [typeFilter, setTypeFilter] = useState<"alle" | "okonomi" | "tillatelse">("alle");
@@ -44,13 +44,20 @@ const AdminPage = () => {
   
       // Beregn totalbeløp og antall søknader per type
       let total = 0;
+      let approvedEconomyTotal = 0; // Ny variabel for godkjente økonomiske søknader
       const typesCount: { [key: string]: number } = {};
       data.forEach((app: Application) => {
         if (app.belop) total += app.belop;
         typesCount[app.soknadstype] = (typesCount[app.soknadstype] || 0) + 1;
+
+        // Beregn totalt beløp for godkjente økonomiske søknader
+        if (app.status === "godkjent" && app.soknadstype === "okonomi" && app.belop) {
+          approvedEconomyTotal += app.belop;
+        }
       });
       setTotalAmount(total);
       setApplicationTypes(typesCount);
+      setApprovedEconomyTotal(approvedEconomyTotal); // Oppdater tilstanden med godkjente økonomiske søknader
 
       // Beregn finansdata
       const typeCounts: { [key: string]: number } = {};
@@ -77,29 +84,6 @@ const AdminPage = () => {
     fetchApplications();
   }, [refresh, statusFilter, typeFilter]);
 
-  // // Funksjon for å håndtere oppdatering av søknadsstatus
-  // const handleStatusUpdate = async (id: string, newStatus: "godkjent" | "avslått") => {
-  //   try {
-  //     await fetch(`/api/soknad/${id}/status`, {
-  //       method: "PATCH",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ status: newStatus }),
-  //     });
-  //     setRefresh(!refresh); // Tving en oppdatering ved å bytte verdien av refresh
-  //   } catch (error) {
-  //     console.error("Feil ved oppdatering av søknadsstatus:", error);
-  //   }
-  // };
-
-  // const processedApplications = applications
-  //   .filter((app) => app.status === "godkjent" || app.status === "avslått")
-  //   .map((app) => ({
-  //     title: app.soknadstype === "okonomi" ? "Økonomi" : "Tillatelse",
-  //     name: app.navn || "Ukjent navn",
-  //     description: app.firma ? `Firma: ${app.firma}` : "Ingen firma oppgitt",
-  //     link: `/applications/${app._id}`,
-  //     status: app.status,
-  //   }));
 
   // Filtrere søknader basert på valgt status og type
   const filteredApplications = applications.filter(app => {
@@ -134,6 +118,8 @@ const AdminPage = () => {
         </ul>
         <h2 className="text-xl font-semibold mt-4">Totalsum av søkte beløp</h2>
         <p>{totalAmount} kr</p>
+        <h2 className="text-xl font-semibold mt-4">Totalsum av godkjente økonomiske søknader</h2>
+        <p>{approvedEconomyTotal} kr</p>
       </div>
 
       {/* Filtreringsalternativer */}
@@ -168,16 +154,7 @@ const AdminPage = () => {
 
       {/* Utsikt over søknader basert på filter */}
       <MaxWidthWrapper>
-        {/* <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">
-            {statusFilter === "alle" && typeFilter === "alle" ? "Alle søknader" : `${statusFilter === "alle" ? "" : statusFilter} ${typeFilter === "alle" ? "" : typeFilter}`}
-          </h2>
-          {statusFilter === "godkjent" || statusFilter === "avslått" ? (
-            <ProcessedApplicationsGrid applications={mappedApplications.filter(app => app.status === statusFilter)} />
-          ) : (
-            <CardHoverEffectDemo applications={mappedApplications} />
-          )}
-        </div> */}
+        
         <ProcessedApplicationsGrid applications={mappedApplications} />
         <ChartComponent applicationData={applicationTypes} financeData={financeData} />
       </MaxWidthWrapper>
