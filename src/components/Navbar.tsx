@@ -24,7 +24,7 @@ const Navbar = () => {
         </Link>
       </div>
       <div>
-        <NavItems />
+        {/* <NavItems /> */}
       </div>
     </div>
   );

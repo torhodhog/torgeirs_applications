@@ -33,8 +33,8 @@ export default function Home() {
             <Link href="/skjemaer" className={buttonVariants()}>
               Se alle søknadskjemaer &rarr;
             </Link>
-            <Link href="/login" className={buttonVariants({variant: "secondary"})}>
-              Logg inn
+            <Link href="/adminpage" className={buttonVariants({variant: "secondary"})}>
+              Admin
               </Link>
           </div>
         </div>

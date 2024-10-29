@@ -22,7 +22,6 @@ const AdminPage = () => {
   const [statusFilter, setStatusFilter] = useState<"alle" | "godkjent" | "avslått" | "innsendt">("alle");
   const [typeFilter, setTypeFilter] = useState<"alle" | "okonomi" | "tillatelse">("alle");
   const [refresh] = useState(false); 
-  // const [applicationData, setApplicationData] = useState<{ [key: string]: number }>({});
   const [financeData, setFinanceData] = useState<{ approved: number; rejected: number; total: number }>({
     approved: 0,
     rejected: 0,
@@ -64,7 +63,7 @@ const AdminPage = () => {
       let approvedSum = 0;
       let rejectedSum = 0;
       let totalSum = 0;
-
+      
       data.forEach((app: Application) => {
         typeCounts[app.soknadstype] = (typeCounts[app.soknadstype] || 0) + 1;
         if (app.status === 'godkjent' && app.belop) approvedSum += app.belop;
@@ -84,6 +83,10 @@ const AdminPage = () => {
     fetchApplications();
   }, [refresh, statusFilter, typeFilter]);
 
+  // Funksjon for å formatere tall med tusenskilletegn
+  const formatNumber = (number: number) => {
+    return new Intl.NumberFormat("nb-NO").format(number);
+  };
 
   // Filtrere søknader basert på valgt status og type
   const filteredApplications = applications.filter(app => {
@@ -117,9 +120,13 @@ const AdminPage = () => {
           ))}
         </ul>
         <h2 className="text-xl font-semibold mt-4">Totalsum av søkte beløp</h2>
-        <p>{totalAmount} kr</p>
+        <p>{formatNumber(totalAmount)} kr</p>
         <h2 className="text-xl font-semibold mt-4">Totalsum av godkjente økonomiske søknader</h2>
-        <p>{approvedEconomyTotal} kr</p>
+        <p>{formatNumber(approvedEconomyTotal)} kr</p>
+        <h2 className="text-xl font-semibold mt-4">Totalsum av avviste økonomiske søknader</h2>
+        <p>{formatNumber(financeData.rejected)} kr</p>
+        <h2 className="text-xl font-semibold mt-4">Totalsum av alle økonomiske søknader</h2>
+        <p>{formatNumber(financeData.total)} kr</p>
       </div>
 
       {/* Filtreringsalternativer */}
@@ -154,11 +161,9 @@ const AdminPage = () => {
 
       {/* Utsikt over søknader basert på filter */}
       <MaxWidthWrapper>
-        
         <ProcessedApplicationsGrid applications={mappedApplications} />
         <ChartComponent applicationData={applicationTypes} financeData={financeData} />
       </MaxWidthWrapper>
-
     </div>
   );
 };
