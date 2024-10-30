@@ -30,7 +30,7 @@ const AdminPage = () => {
   
   const fetchApplications = async () => {
     try {
-      const res = await fetch("/api/soknad"); // Sjekk at ruten er korrekt
+      const res = await fetch("/api/soknad"); 
       if (!res.ok) {
         console.error("Feil ved henting av søknader:", await res.text());
         return;
@@ -41,9 +41,9 @@ const AdminPage = () => {
   
       setApplications(data);
   
-      // Beregn totalbeløp og antall søknader per type
+      // totalbeløp
       let total = 0;
-      let approvedEconomyTotal = 0; // Ny variabel for godkjente økonomiske søknader
+      let approvedEconomyTotal = 0; 
       const typesCount: { [key: string]: number } = {};
       data.forEach((app: Application) => {
         if (app.belop) total += app.belop;
@@ -156,6 +156,9 @@ const AdminPage = () => {
             <option value="okonomi">Økonomi</option>
             <option value="tillatelse">Tillatelse</option>
           </select>
+        </div>
+        <div>
+          
         </div>
       </div>
 

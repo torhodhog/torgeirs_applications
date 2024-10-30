@@ -15,7 +15,7 @@ interface SoknadData {
   kontonummer?: string; 
   tillatelsestype?: string; 
   firma?: string; 
-  type_id: string; // Legger til type_id
+  type_id: string; 
 }
 
 // Funksjon for å generere en unik type_id
@@ -27,10 +27,9 @@ const generateTypeId = (type: string) => {
 const SoknadSkjema = () => {
   const { type } = useParams(); 
 
-  // Hvis type er undefined, setter vi en fallback eller håndterer feilen
+  // Hvis type er undefined, sett til 'ukjent'
   const soknadstype = Array.isArray(type) ? type[0] : type || 'ukjent'; 
 
-  // Legg til state for feltene
   const [navn, setNavn] = useState('');
   const [epost, setEpost] = useState('');
   const [beskrivelse, setBeskrivelse] = useState('');
@@ -49,16 +48,16 @@ const SoknadSkjema = () => {
       beskrivelse,
       soknadstype,
       firma,
-      type_id: generateTypeId(soknadstype), // Legger til type_id basert på søknadstypen
+      type_id: generateTypeId(soknadstype), 
     };
 
-    // Legg til felter som er spesifikke for økonomiske søknader
+    
     if (soknadstype === 'okonomi') {
       soknadData.belop = parseInt(belop);
       soknadData.kontonummer = kontonummer;
     }
 
-    // Legg til felter som er spesifikke for tillatelsessøknader
+    
     if (soknadstype === 'tillatelse') {
       soknadData.tillatelsestype = tillatelsestype;
     }
@@ -208,22 +207,34 @@ const SoknadSkjema = () => {
           </>
         )}
 
-        {type === 'tillatelse' && (
-          <div>
-            <label htmlFor="tillatelsestype" className="block text-gray-700 font-medium">
-              Tillatelsestype:
-            </label>
-            <input
-              type="text"
-              id="tillatelsestype"
-              name="tillatelsestype"
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              value={tillatelsestype}
-              onChange={(e) => setTillatelsestype(e.target.value)}
-              required
-            />
-          </div>
-        )}
+{type === 'tillatelse' && (
+  <div>
+    <label htmlFor="tillatelsestype" className="block text-gray-700 font-medium">
+      Tillatelsestype:
+    </label>
+    <select
+      id="tillatelsestype"
+      name="tillatelsestype"
+      className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+      value={tillatelsestype}
+      onChange={(e) => setTillatelsestype(e.target.value)}
+      required
+    >
+      <option value="">Velg en type</option>
+      <option value="bygg">Bygg</option>
+      <option value="arrangement">Arrangement</option>
+      <option value="servering">Servering</option>
+      <option value="skjenkebevilling">Skjenkebevilling</option>
+      <option value="miljø">Miljø</option>
+      <option value="transport">Transport</option>
+      <option value="reklame">Reklame</option>
+      <option value="forskning">Forskning</option>
+      <option value="film/foto">Film/Foto</option>
+      <option value="annet">Annet</option>
+    </select>
+  </div>
+)}
+
 
         <button
           type="submit"
