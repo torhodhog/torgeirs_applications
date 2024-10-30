@@ -104,3 +104,28 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Feil ved oppdatering av søknad' }, { status: 500 });
   }
 }
+
+// DELETE forespørsel for å slette en søknad basert på ID
+export async function DELETE(req: NextRequest) {
+  try {
+    const { id } = await req.json();  // Hent `id` fra body
+
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Ugyldig ID' }, { status: 400 });
+    }
+
+    const db = await connectToDatabase();
+    const collection = db.collection('soknader');
+
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: 'Søknad ikke funnet' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Søknad slettet!' }, { status: 200 });
+  } catch (error) {
+    console.error("Feil ved sletting av søknad:", error);
+    return NextResponse.json({ error: 'Feil ved sletting av søknad' }, { status: 500 });
+  }
+}

@@ -95,6 +95,10 @@ const AdminPage = () => {
     return matchesStatus && matchesType;
   });
 
+  
+
+
+  
   // Mappe filtrerte søknader for visning
   const mappedApplications = filteredApplications.map(app => ({
     id: app._id,
@@ -104,6 +108,8 @@ const AdminPage = () => {
     link: `/applications/${app._id}`,
     status: app.status as "godkjent" | "avslått" 
   }));
+
+  
 
   return (
     <div className="admin-panel max-w-6xl mx-auto mt-20 p-6 border rounded-lg shadow-lg">
@@ -125,8 +131,7 @@ const AdminPage = () => {
         <p>{formatNumber(approvedEconomyTotal)} kr</p>
         <h2 className="text-xl font-semibold mt-4">Totalsum av avviste økonomiske søknader</h2>
         <p>{formatNumber(financeData.rejected)} kr</p>
-        <h2 className="text-xl font-semibold mt-4">Totalsum av alle økonomiske søknader</h2>
-        <p>{formatNumber(financeData.total)} kr</p>
+     
       </div>
 
       {/* Filtreringsalternativer */}

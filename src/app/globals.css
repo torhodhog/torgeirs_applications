@@ -85,3 +85,10 @@ body {
   max-width: 600px; /* Maksimal bredde */
   margin: 0 auto; /* Sentrer diagrammet */
 }
+
+/* Skjul elementer ved utskrift */
+@media print {
+  .no-print {
+    display: none;
+  }
+}

@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
+
 // POST forespørsel for å legge til en ny søknad
 export async function POST(req: NextRequest) {
   try {
