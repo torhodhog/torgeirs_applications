@@ -2,8 +2,13 @@
 "use client";
 
 import React, { useState } from 'react';
+import { SoknadData } from '../../lib/types';
 
-const TillatelseSoknad = () => {
+interface TillatelseSoknadProps {
+  onSubmit: (data: SoknadData) => Promise<void>;
+}
+
+const TillatelseSoknad: React.FC<TillatelseSoknadProps> = ({ onSubmit }) => {
   const [navn, setNavn] = useState('');
   const [epost, setEpost] = useState('');
   const [beskrivelse, setBeskrivelse] = useState('');
@@ -13,7 +18,7 @@ const TillatelseSoknad = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const soknadData = {
+    const soknadData: SoknadData = {
       navn,
       epost,
       beskrivelse,
@@ -23,30 +28,13 @@ const TillatelseSoknad = () => {
       type_id: `tillatelse-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
     };
 
-    try {
-      const response = await fetch('/api/soknad', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(soknadData),
-      });
+    await onSubmit(soknadData);
 
-      if (response.ok) {
-        alert('Søknaden ble sendt inn!');
-        // Tilbakestill feltene
-        setNavn('');
-        setEpost('');
-        setBeskrivelse('');
-        setFirma('');
-        setTillatelsestype('');
-      } else {
-        alert('Feil ved innsending av søknad.');
-      }
-    } catch (error) {
-      console.error('Feil:', error);
-      alert('Noe gikk galt ved innsending.');
-    }
+      setNavn('');
+      setEpost('');
+      setBeskrivelse('');
+      setFirma('');
+      setTillatelsestype('');
   };
 
   return (

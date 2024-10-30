@@ -23,7 +23,12 @@ const HomePage = () => {
   href="/soknad/tillatelse"
   beskrivelse="Søk om tillatelse for byggeprosjekter eller andre formål."
 />
-
+{/* <CardDemo
+  navn="Tillatelsessøknad"
+  bildeUrl="/tilttak.jpg"
+  href="/soknad/reiseregning"
+  beskrivelse="Søk om tillatelse for byggeprosjekter eller andre formål."
+/> */}
 
        
       </div>

@@ -1,20 +1,24 @@
-// components/OkonomiSoknad.tsx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { SoknadData } from "../../lib/types";
 
-const OkonomiSoknad = () => {
-  const [navn, setNavn] = useState('');
-  const [epost, setEpost] = useState('');
-  const [beskrivelse, setBeskrivelse] = useState('');
-  const [belop, setBelop] = useState('');
-  const [kontonummer, setKontonummer] = useState('');
-  const [firma, setFirma] = useState('');
+interface OkonomiSoknadProps {
+  onSubmit: (data: SoknadData) => Promise<void>;
+}
+
+const OkonomiSoknad: React.FC<OkonomiSoknadProps> = ({ onSubmit }) => {
+  const [navn, setNavn] = useState("");
+  const [epost, setEpost] = useState("");
+  const [beskrivelse, setBeskrivelse] = useState("");
+  const [belop, setBelop] = useState("");
+  const [kontonummer, setKontonummer] = useState("");
+  const [firma, setFirma] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const soknadData = {
+    const soknadData: SoknadData = {
       navn,
       epost,
       beskrivelse,
@@ -22,41 +26,27 @@ const OkonomiSoknad = () => {
       firma,
       belop: parseInt(belop),
       kontonummer,
-      type_id: `okonomi-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+      type_id: `okonomi-${Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, "0")}`,
     };
 
-    try {
-      const response = await fetch('/api/soknad', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(soknadData),
-      });
+    await onSubmit(soknadData);
 
-      if (response.ok) {
-        alert('Søknaden ble sendt inn!');
-        // Tilbakestill feltene
-        setNavn('');
-        setEpost('');
-        setBeskrivelse('');
-        setBelop('');
-        setFirma('');
-        setKontonummer('');
-      } else {
-        alert('Feil ved innsending av søknad.');
-      }
-    } catch (error) {
-      console.error('Feil:', error);
-      alert('Noe gikk galt ved innsending.');
-    }
+    setNavn("");
+    setEpost("");
+    setBeskrivelse("");
+    setBelop("");
+    setFirma("");
+    setKontonummer("");
   };
 
   return (
     <div className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-lg mt-24">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Søknad om økonomisk støtte</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">
+        Søknad om økonomisk støtte
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        
         <div>
           <label htmlFor="navn" className="block text-gray-700 font-medium">
             Navn: <span className="text-red-500">*</span>
@@ -103,7 +93,10 @@ const OkonomiSoknad = () => {
         </div>
 
         <div>
-          <label htmlFor="beskrivelse" className="block text-gray-700 font-medium">
+          <label
+            htmlFor="beskrivelse"
+            className="block text-gray-700 font-medium"
+          >
             Søknadstekst: <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -134,7 +127,10 @@ const OkonomiSoknad = () => {
         </div>
 
         <div>
-          <label htmlFor="kontonummer" className="block text-gray-700 font-medium">
+          <label
+            htmlFor="kontonummer"
+            className="block text-gray-700 font-medium"
+          >
             Kontonummer: <span className="text-red-500">*</span>
           </label>
           <input
