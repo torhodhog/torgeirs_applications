@@ -1,21 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import React from 'react';
 
 // Definer type for søknadsdata
 interface SoknadData {
   navn: string;
   epost: string;
   beskrivelse: string;
-  soknadstype: string; 
-  belop?: number; 
-  kontonummer?: string; 
-  tillatelsestype?: string; 
-  firma?: string; 
-  type_id: string; 
+  soknadstype: string;
+  belop?: number;
+  kontonummer?: string;
+  tillatelsestype?: string;
+  firma?: string;
+  type_id: string;
 }
 
 // Funksjon for å generere en unik type_id
@@ -25,10 +24,10 @@ const generateTypeId = (type: string) => {
 };
 
 const SoknadSkjema = () => {
-  const { type } = useParams(); 
+  const { type } = useParams();
 
   // Hvis type er undefined, sett til 'ukjent'
-  const soknadstype = Array.isArray(type) ? type[0] : type || 'ukjent'; 
+  const soknadstype = Array.isArray(type) ? type[0] : type || 'ukjent';
 
   const [navn, setNavn] = useState('');
   const [epost, setEpost] = useState('');
@@ -37,6 +36,14 @@ const SoknadSkjema = () => {
   const [kontonummer, setKontonummer] = useState('');
   const [tillatelsestype, setTillatelsestype] = useState('');
   const [firma, setFirma] = useState('');
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleClick = () => {
+    setIsClicked(true);
+    setTimeout(() => {
+      setIsClicked(false);
+    }, 1000);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,16 +55,14 @@ const SoknadSkjema = () => {
       beskrivelse,
       soknadstype,
       firma,
-      type_id: generateTypeId(soknadstype), 
+      type_id: generateTypeId(soknadstype),
     };
 
-    
     if (soknadstype === 'okonomi') {
       soknadData.belop = parseInt(belop);
       soknadData.kontonummer = kontonummer;
     }
 
-    
     if (soknadstype === 'tillatelse') {
       soknadData.tillatelsestype = tillatelsestype;
     }
@@ -93,7 +98,6 @@ const SoknadSkjema = () => {
 
   return (
     <div className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-lg mt-24">
-      {/* Tilbakeknapp */}
       <Link href="/skjemaer" className="text-blue-500 hover:text-blue-700 flex items-center mb-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +130,7 @@ const SoknadSkjema = () => {
             required
           />
         </div>
-        
+
         <div>
           <label htmlFor="firma" className="block text-gray-700 font-medium">
             Firma:
@@ -135,7 +139,7 @@ const SoknadSkjema = () => {
             type="text"
             id="firma"
             name="firma"
-            placeholder='Fyll ut hvis du søker på vegne av et firma'
+            placeholder="Fyll ut hvis du søker på vegne av et firma"
             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             value={firma}
             onChange={(e) => setFirma(e.target.value)}
@@ -207,38 +211,40 @@ const SoknadSkjema = () => {
           </>
         )}
 
-{type === 'tillatelse' && (
-  <div>
-    <label htmlFor="tillatelsestype" className="block text-gray-700 font-medium">
-      Tillatelsestype:
-    </label>
-    <select
-      id="tillatelsestype"
-      name="tillatelsestype"
-      className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-      value={tillatelsestype}
-      onChange={(e) => setTillatelsestype(e.target.value)}
-      required
-    >
-      <option value="">Velg en type</option>
-      <option value="bygg">Bygg</option>
-      <option value="arrangement">Arrangement</option>
-      <option value="servering">Servering</option>
-      <option value="skjenkebevilling">Skjenkebevilling</option>
-      <option value="miljø">Miljø</option>
-      <option value="transport">Transport</option>
-      <option value="reklame">Reklame</option>
-      <option value="forskning">Forskning</option>
-      <option value="film/foto">Film/Foto</option>
-      <option value="annet">Annet</option>
-    </select>
-  </div>
-)}
-
+        {type === 'tillatelse' && (
+          <div>
+            <label htmlFor="tillatelsestype" className="block text-gray-700 font-medium">
+              Tillatelsestype:
+            </label>
+            <select
+              id="tillatelsestype"
+              name="tillatelsestype"
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              value={tillatelsestype}
+              onChange={(e) => setTillatelsestype(e.target.value)}
+              required
+            >
+              <option value="">Velg en type</option>
+              <option value="bygg">Bygg</option>
+              <option value="arrangement">Arrangement</option>
+              <option value="servering">Servering</option>
+              <option value="skjenkebevilling">Skjenkebevilling</option>
+              <option value="miljø">Miljø</option>
+              <option value="transport">Transport</option>
+              <option value="reklame">Reklame</option>
+              <option value="forskning">Forskning</option>
+              <option value="film/foto">Film/Foto</option>
+              <option value="annet">Annet</option>
+            </select>
+          </div>
+        )}
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
+          className={`w-full text-white font-semibold py-2 px-4 rounded-md transition duration-300 ${
+            isClicked ? 'bg-green-500' : 'bg-blue-500 hover:bg-blue-600'
+          }`}
+          onClick={handleClick}
         >
           Send Søknad
         </button>
