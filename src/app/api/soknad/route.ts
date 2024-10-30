@@ -75,7 +75,6 @@ export async function POST(req: NextRequest) {
       belop: body.soknadstype === 'okonomi' ? parseInt(body.belop) : null,
       kontonummer: body.soknadstype === 'okonomi' ? body.kontonummer : null,
       tillatelsestype: body.soknadstype === 'tillatelse' ? body.tillatelsestype : null,
-      begrunnelse: body.begrunnelse || null,
       feedback: ''
     };
 

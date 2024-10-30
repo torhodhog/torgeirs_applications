@@ -1,100 +1,25 @@
+// components/SoknadSkjema.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-
-// Definer type for søknadsdata
-interface SoknadData {
-  navn: string;
-  epost: string;
-  beskrivelse: string;
-  soknadstype: string;
-  belop?: number;
-  kontonummer?: string;
-  tillatelsestype?: string;
-  firma?: string;
-  type_id: string;
-}
-
-// Funksjon for å generere en unik type_id
-const generateTypeId = (type: string) => {
-  const randomId = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  return `${type}-${randomId}`;
-};
+import OkonomiSoknad from '../../../components/Soknader/OkonomiSoknad';
+import TillatelseSoknad from '../../../components/Soknader/TillatelseSoknad';
 
 const SoknadSkjema = () => {
   const { type } = useParams();
 
-  // Hvis type er undefined, sett til 'ukjent'
-  const soknadstype = Array.isArray(type) ? type[0] : type || 'ukjent';
+  // Velg riktig komponent basert på type
+  let SelectedSoknadComponent;
 
-  const [navn, setNavn] = useState('');
-  const [epost, setEpost] = useState('');
-  const [beskrivelse, setBeskrivelse] = useState('');
-  const [belop, setBelop] = useState('');
-  const [kontonummer, setKontonummer] = useState('');
-  const [tillatelsestype, setTillatelsestype] = useState('');
-  const [firma, setFirma] = useState('');
-  const [isClicked, setIsClicked] = useState(false);
-
-  const handleClick = () => {
-    setIsClicked(true);
-    setTimeout(() => {
-      setIsClicked(false);
-    }, 1000);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Lag soknadData basert på type
-    const soknadData: SoknadData = {
-      navn,
-      epost,
-      beskrivelse,
-      soknadstype,
-      firma,
-      type_id: generateTypeId(soknadstype),
-    };
-
-    if (soknadstype === 'okonomi') {
-      soknadData.belop = parseInt(belop);
-      soknadData.kontonummer = kontonummer;
-    }
-
-    if (soknadstype === 'tillatelse') {
-      soknadData.tillatelsestype = tillatelsestype;
-    }
-
-    try {
-      const response = await fetch('/api/soknad', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(soknadData),
-      });
-
-      if (response.ok) {
-        await response.json();
-        alert('Søknaden ble sendt inn!');
-        // Tilbakestill feltene
-        setNavn('');
-        setEpost('');
-        setBeskrivelse('');
-        setBelop('');
-        setFirma('');
-        setKontonummer('');
-        setTillatelsestype('');
-      } else {
-        alert('Feil ved innsending av søknad.');
-      }
-    } catch (error) {
-      console.error('Feil:', error);
-      alert('Noe gikk galt ved innsending.');
-    }
-  };
+  if (type === 'okonomi') {
+    SelectedSoknadComponent = OkonomiSoknad;
+  } else if (type === 'tillatelse') {
+    SelectedSoknadComponent = TillatelseSoknad;
+  } else {
+    return <p className="text-red-500">Ugyldig søknadstype valgt.</p>;
+  }
 
   return (
     <div className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-lg mt-24">
@@ -115,140 +40,8 @@ const SoknadSkjema = () => {
         {type === 'okonomi' ? 'Søknad om økonomisk støtte' : 'Tillatelsessøknad'}
       </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="navn" className="block text-gray-700 font-medium">
-            Navn: <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="navn"
-            name="navn"
-            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            value={navn}
-            onChange={(e) => setNavn(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="firma" className="block text-gray-700 font-medium">
-            Firma:
-          </label>
-          <input
-            type="text"
-            id="firma"
-            name="firma"
-            placeholder="Fyll ut hvis du søker på vegne av et firma"
-            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            value={firma}
-            onChange={(e) => setFirma(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="epost" className="block text-gray-700 font-medium">
-            E-post: <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            id="epost"
-            name="epost"
-            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            value={epost}
-            onChange={(e) => setEpost(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="beskrivelse" className="block text-gray-700 font-medium">
-            Søknadstekst: <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            id="beskrivelse"
-            name="beskrivelse"
-            rows={5}
-            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Beskriv søknaden her"
-            value={beskrivelse}
-            onChange={(e) => setBeskrivelse(e.target.value)}
-            required
-          />
-        </div>
-
-        {type === 'okonomi' && (
-          <>
-            <div>
-              <label htmlFor="belop" className="block text-gray-700 font-medium">
-                Beløp: <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                id="belop"
-                name="belop"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={belop}
-                onChange={(e) => setBelop(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="kontonummer" className="block text-gray-700 font-medium">
-                Kontonummer: <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="kontonummer"
-                name="kontonummer"
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={kontonummer}
-                onChange={(e) => setKontonummer(e.target.value)}
-                required
-              />
-            </div>
-          </>
-        )}
-
-        {type === 'tillatelse' && (
-          <div>
-            <label htmlFor="tillatelsestype" className="block text-gray-700 font-medium">
-              Tillatelsestype:
-            </label>
-            <select
-              id="tillatelsestype"
-              name="tillatelsestype"
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              value={tillatelsestype}
-              onChange={(e) => setTillatelsestype(e.target.value)}
-              required
-            >
-              <option value="">Velg en type</option>
-              <option value="bygg">Bygg</option>
-              <option value="arrangement">Arrangement</option>
-              <option value="servering">Servering</option>
-              <option value="skjenkebevilling">Skjenkebevilling</option>
-              <option value="miljø">Miljø</option>
-              <option value="transport">Transport</option>
-              <option value="reklame">Reklame</option>
-              <option value="forskning">Forskning</option>
-              <option value="film/foto">Film/Foto</option>
-              <option value="annet">Annet</option>
-            </select>
-          </div>
-        )}
-
-        <button
-          type="submit"
-          className={`w-full text-white font-semibold py-2 px-4 rounded-md transition duration-300 ${
-            isClicked ? 'bg-green-500' : 'bg-blue-500 hover:bg-blue-600'
-          }`}
-          onClick={handleClick}
-        >
-          Send Søknad
-        </button>
-      </form>
+      {/* Render den valgte søknadskomponenten */}
+      <SelectedSoknadComponent />
     </div>
   );
 };
